@@ -1,0 +1,6 @@
+@AliyewRestaurant.WebApi_HostAddress = http://localhost:5186
+
+GET {{AliyewRestaurant.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
