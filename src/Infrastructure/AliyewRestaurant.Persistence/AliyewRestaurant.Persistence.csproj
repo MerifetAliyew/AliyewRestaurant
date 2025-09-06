@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\AliyewRestaurant.Application\AliyewRestaurant.Application.csproj" />
+    <ProjectReference Include="..\AliyewRestaurant.Infrastructure\AliyewRestaurant.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

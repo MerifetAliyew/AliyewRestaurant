@@ -33,6 +33,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 
 // Configure JWT settings
 builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JwtSettings"));
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JWTSettings>();
 
 builder.Services.AddAuthentication(options =>

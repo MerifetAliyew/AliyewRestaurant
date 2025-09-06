@@ -1,5 +1,6 @@
 ﻿using AliyewRestaurant.Application.Abstracts.Services;
 using AliyewRestaurant.Persistence.Services;
+using AliyewRestaurant.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AliyewRestaurant.Persistence;
@@ -13,6 +14,7 @@ public static class ServiceRegistration
 
         #region Servicies
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IEmailService, EmailService>();
         #endregion
 
 

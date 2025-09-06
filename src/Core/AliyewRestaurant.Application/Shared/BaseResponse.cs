@@ -7,20 +7,19 @@ public class BaseResponse<T>
     public bool Success { get; set; }
     public string? Message { get; set; }
     public HttpStatusCode StatusCode { get; set; }
-
     public T? Data { get; set; }
 
     public BaseResponse(HttpStatusCode statusCode)
     {
-        Success = true;
         StatusCode = statusCode;
-
+        Success = statusCode == HttpStatusCode.OK || statusCode == HttpStatusCode.Created;
     }
+
     public BaseResponse(string message, HttpStatusCode statusCode)
     {
         Message = message;
-        Success = true;
         StatusCode = statusCode;
+        Success = statusCode == HttpStatusCode.OK || statusCode == HttpStatusCode.Created;
     }
 
     public BaseResponse(string message, bool isSuccess, HttpStatusCode statusCode)
@@ -29,11 +28,13 @@ public class BaseResponse<T>
         Success = isSuccess;
         StatusCode = statusCode;
     }
+
     public BaseResponse(string message, T? data, HttpStatusCode statusCode)
     {
-        Success = true;
-        Data = data;
         Message = message;
+        Data = data;
         StatusCode = statusCode;
+        Success = statusCode == HttpStatusCode.OK || statusCode == HttpStatusCode.Created;
     }
 }
+
