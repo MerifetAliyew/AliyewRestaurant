@@ -81,4 +81,12 @@ public class AccountsController : ControllerBase
         return StatusCode((int)result.StatusCode, result);
     }
 
+    [HttpGet("all")]
+    [ProducesResponseType(typeof(BaseResponse<List<UserListDto>>), 200)]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        var response = await _userService.GetAllUsersAsync();
+        return StatusCode((int)response.StatusCode, response);
+    }
+
 }

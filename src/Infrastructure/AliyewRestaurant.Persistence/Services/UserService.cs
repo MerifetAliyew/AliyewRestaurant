@@ -296,4 +296,32 @@ public class UserService : IUserService
 
         return new BaseResponse<string>("Password has been reset successfully.", HttpStatusCode.OK);
     }
+
+    public async Task<BaseResponse<List<UserListDto>>> GetAllUsersAsync()
+    {
+        var users = _userManager.Users.ToList();
+        var result = new List<UserListDto>();
+
+        foreach (var user in users)
+        {
+            // CreatedAt claim yoxdursa default sahəni istifadə edirik
+            var claims = await _userManager.GetClaimsAsync(user);
+            var createdAtClaim = claims.FirstOrDefault(c => c.Type == "CreatedAt")?.Value;
+            var createdAt = createdAtClaim != null ? DateTime.Parse(createdAtClaim) : user.CreatedAt;
+
+            result.Add(new UserListDto
+            {
+                Id = user.Id,
+                Email = user.Email!,
+                UserName = user.UserName!,
+                CreatedAt = createdAt
+            });
+        }
+
+        return new BaseResponse<List<UserListDto>>(
+            "🎉 Bütün istifadəçilərin siyahısı 🎉",
+            result,
+            HttpStatusCode.OK
+        );
+    }
 }

@@ -6,6 +6,7 @@ namespace AliyewRestaurant.Domain.Entites;
 public class AppUser : IdentityUser
 {
     public string FullName { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string? RefreshToken { get; set; } = null!;
     public DateTime? ExpiryDate { get; set; }
     public ICollection<Reservation> Reservations { get; set; }
