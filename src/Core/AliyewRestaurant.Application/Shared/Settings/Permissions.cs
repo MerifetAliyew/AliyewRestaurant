@@ -1,4 +1,6 @@
-﻿namespace AliyewRestaurant.Application.Shared.Settings;
+﻿using Microsoft.AspNetCore.Authorization;
+
+namespace AliyewRestaurant.Application.Shared.Settings;
 
 public static class Permissions
 {
@@ -57,6 +59,7 @@ public static class Permissions
         public const string Delete = "Reservation.Delete";
         public const string View = "Reservation.View";
 
+ 
         public static List<string> All { get; } = new List<string>
         {
             Create,
@@ -66,17 +69,7 @@ public static class Permissions
         };
     }
 
-    public static class VIPMembership
-    {
-        public const string VIP = "VIP";
-
-        public static List<string> All { get; } = new List<string>
-        {
-            VIP
-        };
-    }
-
-    public static class Review
+    public static class ReviewPermissions
     {
         public const string Create = "Review.Create";
         public const string Update = "Review.Update";
@@ -84,12 +77,12 @@ public static class Permissions
         public const string View = "Review.View";
 
         public static List<string> All { get; } = new List<string>
-        {
-            Create,
-            Update,
-            Delete,
-            View
-        };
+    {
+        Create,
+        Update,
+        Delete,
+        View
+    };
     }
 
     public static class Role

@@ -12,7 +12,7 @@ namespace AliyewRestaurant.WebApi.Controllers;
 [ApiController]
 public class MenuItemController : ControllerBase
     {
-        private readonly IMenuItemService _menuItemService;
+       private readonly IMenuItemService _menuItemService;
 
         public MenuItemController(IMenuItemService menuItemService)
         {
@@ -66,6 +66,7 @@ public class MenuItemController : ControllerBase
         {
             var result = await _menuItemService.DeleteMenuItemAsync(id);
             return StatusCode((int)result.StatusCode, result);
-        }
+        }  
+
     }
 

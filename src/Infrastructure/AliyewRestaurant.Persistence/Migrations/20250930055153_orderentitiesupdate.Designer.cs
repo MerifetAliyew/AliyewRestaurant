@@ -4,6 +4,7 @@ using AliyewRestaurant.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AliyewRestaurant.Persistence.Migrations
 {
     [DbContext(typeof(AliyewRestaurantDbContext))]
-    partial class AliyewRestaurantDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250930055153_orderentitiesupdate")]
+    partial class orderentitiesupdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -179,11 +182,11 @@ namespace AliyewRestaurant.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
+                    b.Property<int>("PaymentMethod")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -258,7 +261,7 @@ namespace AliyewRestaurant.Persistence.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("TableId")
+                    b.Property<Guid>("TableId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -570,7 +573,8 @@ namespace AliyewRestaurant.Persistence.Migrations
                     b.HasOne("AliyewRestaurant.Domain.Entites.Table", "Table")
                         .WithMany("Reservations")
                         .HasForeignKey("TableId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("AliyewRestaurant.Domain.Entites.AppUser", "User")
                         .WithMany("Reservations")

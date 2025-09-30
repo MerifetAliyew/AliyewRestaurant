@@ -4,6 +4,7 @@ using AliyewRestaurant.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using AliyewRestaurant.Application.Abstracts.Repositories;
 using AliyewRestaurant.Persistence.Repositories;
+using AliyewRestaurant.Persistence.Services;
 
 namespace AliyewRestaurant.Persistence;
 
@@ -16,6 +17,8 @@ public static class ServiceRegistration
         services.AddScoped<IMenuItemRepository, MenuItemRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped<IReservationRepository, ReservationRepository>();
+        services.AddScoped<IReviewRepository, ReviewRepository>();
         #endregion
 
         #region Servicies
@@ -25,6 +28,8 @@ public static class ServiceRegistration
         services.AddScoped<IMenuItemService, MenuItemService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IRoleService, RoleService>();
+        services.AddScoped<IReservationService, ReservationService>();
+        services.AddScoped<IReviewService, ReviewService>();
         #endregion
 
 

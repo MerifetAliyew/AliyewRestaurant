@@ -17,6 +17,7 @@ public interface IRepository<T> where T : BaseEntity, new()
                          bool isOrderByAsc = true,
                          bool isTracking = false);
     Task AddAsync(T entity);
+    Task<List<T>> GetAllAsync();
     void Delete(T entity);
     void Update(T entity);
     Task SaveChangeAsync();

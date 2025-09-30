@@ -5,6 +5,8 @@ using AliyewRestaurant.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using AliyewRestaurant.Application.Shared.Settings;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,6 +23,7 @@ public class OrdersController : ControllerBase
         _orderService = orderService;
     }
 
+    [Authorize(Policy = Permissions.Order.View)]
     [HttpGet("get")]
     [ProducesResponseType(typeof(BaseResponse<OrderGetDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(BaseResponse<OrderGetDto>), (int)HttpStatusCode.NotFound)]
@@ -31,6 +34,7 @@ public class OrdersController : ControllerBase
         return StatusCode((int)result.StatusCode, result);
     }
 
+    [Authorize]
     [HttpPost("create")]
     [ProducesResponseType(typeof(BaseResponse<OrderGetDto>), (int)HttpStatusCode.Created)]
     [ProducesResponseType(typeof(BaseResponse<OrderGetDto>), (int)HttpStatusCode.BadRequest)]
@@ -38,10 +42,20 @@ public class OrdersController : ControllerBase
     [ProducesResponseType(typeof(BaseResponse<OrderGetDto>), (int)HttpStatusCode.InternalServerError)]
     public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDto dto)
     {
+        // Token-dan user ID götür və DTO-dakı userId-ni override et
+        var tokenUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(tokenUserId))
+            return StatusCode(404, new BaseResponse<OrderGetDto>("İstifadəçi tapılmadı", HttpStatusCode.NotFound));
+
+        dto.UserId = tokenUserId; // front-end-dən gələn userId override olunur
+
         var result = await _orderService.CreateOrderAsync(dto);
         return StatusCode((int)result.StatusCode, result);
     }
 
+
+
+    [Authorize]
     [HttpGet("all")]
     [ProducesResponseType(typeof(BaseResponse<List<OrderGetDto>>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(BaseResponse<List<OrderGetDto>>), (int)HttpStatusCode.InternalServerError)]
@@ -51,6 +65,7 @@ public class OrdersController : ControllerBase
         return StatusCode((int)result.StatusCode, result);
     }
 
+    [Authorize(Policy = Permissions.Order.View)]
     [HttpPatch("update-status")]
     [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.NotFound)]

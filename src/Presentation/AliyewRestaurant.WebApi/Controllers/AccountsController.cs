@@ -2,7 +2,11 @@
 using AliyewRestaurant.Application.Abstracts.Services;
 using AliyewRestaurant.Application.DTOs.UserDTOs;
 using AliyewRestaurant.Application.Shared;
+using AliyewRestaurant.Application.Shared.Settings;
+using AliyewRestaurant.Persistence.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static AliyewRestaurant.Application.Shared.Settings.Permissions;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -38,6 +42,7 @@ public class AccountsController : ControllerBase
         var result = await _userService.Login(dto);
         return StatusCode((int)result.StatusCode, result);
     }
+
 
     [HttpPost("forgot-password")]
     [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.OK)]
@@ -81,6 +86,7 @@ public class AccountsController : ControllerBase
         return StatusCode((int)result.StatusCode, result);
     }
 
+    [Authorize(Policy = Permissions.Role.GetAllPermissions)]
     [HttpGet("all")]
     [ProducesResponseType(typeof(BaseResponse<List<UserListDto>>), 200)]
     public async Task<IActionResult> GetAllUsers()
@@ -88,5 +94,6 @@ public class AccountsController : ControllerBase
         var response = await _userService.GetAllUsersAsync();
         return StatusCode((int)response.StatusCode, response);
     }
+
 
 }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using AliyewRestaurant.Application.Shared.Helpers;
 using AliyewRestaurant.Application.Shared.Settings;
 using Microsoft.AspNetCore.Authorization;
+using static AliyewRestaurant.Application.Shared.Settings.Permissions;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,6 +23,7 @@ public class RoleController : ControllerBase
         _roleService = roleService;
     }
 
+    [Authorize(Policy = Permissions.Role.GetAllPermissions)]
     [HttpGet("with-permissions")]
     [ProducesResponseType(typeof(BaseResponse<List<RoleWithPermissionsDto>>), 200)]
     public async Task<IActionResult> GetRolesWithPermissions()
@@ -30,6 +32,7 @@ public class RoleController : ControllerBase
         return StatusCode((int)response.StatusCode, response);
     }
 
+    [Authorize(Policy = Permissions.Role.GetAllPermissions)]
     [HttpGet("permissions")]
     public IActionResult GetAllPermissions()
     {
@@ -37,6 +40,7 @@ public class RoleController : ControllerBase
         return Ok(permissions);
     }
 
+    [Authorize(Policy = Permissions.Role.Create)]
     [HttpPost("create-role")]
     [ProducesResponseType(typeof(BaseResponse<string?>), (int)HttpStatusCode.Created)]
     [ProducesResponseType(typeof(BaseResponse<string?>), (int)HttpStatusCode.BadRequest)]
@@ -47,6 +51,15 @@ public class RoleController : ControllerBase
         return StatusCode((int)result.StatusCode, result);
     }
 
+    [Authorize(Policy = Role.Update)]
+    [HttpPost("ad-to-role")]
+    public async Task<IActionResult> AssignRole([FromQuery] string userId, [FromQuery] string roleName)
+    {
+        var result = await _roleService.AssignRoleToUserAsync(userId, roleName);
+        return StatusCode((int)result.StatusCode, result);
+    }
+
+    [Authorize(Policy = Permissions.Role.Delete)]
     [HttpDelete("{roleName}")]
     public async Task<IActionResult> DeleteRole(string roleName)
     {

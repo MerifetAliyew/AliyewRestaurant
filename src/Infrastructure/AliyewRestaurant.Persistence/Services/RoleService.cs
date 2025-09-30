@@ -5,16 +5,19 @@ using AliyewRestaurant.Application.Shared;
 using Microsoft.AspNetCore.Identity;
 using System.Net;
 using System.Security.Claims;
+using AliyewRestaurant.Domain.Entites;
 
 namespace AliyewRestaurant.Persistence.Services;
 
 public class RoleService : IRoleService
 {
+    private readonly UserManager<AppUser> _userManager;
     private RoleManager<IdentityRole> _roleManager { get; }
 
-    public RoleService(RoleManager<IdentityRole> roleManager)
+    public RoleService(RoleManager<IdentityRole> roleManager, UserManager<AppUser> userManager)
     {
         _roleManager = roleManager;
+        _userManager = userManager;
     }
 
     public async Task<BaseResponse<string?>> CreateRole(RoleCreateDto dto)
@@ -107,4 +110,23 @@ public class RoleService : IRoleService
         return new BaseResponse<List<RoleWithPermissionsDto>>("Rollar və permissionlar siyahısı", result, HttpStatusCode.OK);
     }
 
+    public async Task<BaseResponse<string>> AssignRoleToUserAsync(string userId, string roleName)
+    {
+        var user = await _userManager.FindByIdAsync(userId); // burda artıq _userManager mövcuddur
+        if (user == null)
+            return new BaseResponse<string>("İstifadəçi tapılmadı.", null, HttpStatusCode.NotFound);
+
+        var roleExists = await _roleManager.RoleExistsAsync(roleName);
+        if (!roleExists)
+            return new BaseResponse<string>("Role mövcud deyil.", null, HttpStatusCode.BadRequest);
+
+        var result = await _userManager.AddToRoleAsync(user, roleName);
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            return new BaseResponse<string>($"Role təyin edilərkən xəta baş verdi: {errors}", null, HttpStatusCode.InternalServerError);
+        }
+
+        return new BaseResponse<string>($"Role '{roleName}' uğurla təyin edildi.", null, HttpStatusCode.OK);
+    }
 }

@@ -1,15 +1,12 @@
 ﻿using AliyewRestaurant.Domain.Enums;
 
-namespace AliyewRestaurant.Domain.Entites;
+namespace AliyewRestaurant.Application.DTOs.ReservationDTOs;
 
-public class Reservation : BaseEntity
+public class ReservationGetDto
 {
-    public Guid? TableId { get; set; }
-    public Table Table { get; set; }
-
-    public string UserId { get; set; }
-    public AppUser User { get; set; }
-
+    public Guid Id { get; set; }
+    public int TableNumber { get; set; }
+    public string? UserName { get; set; }
     public DateTime ReservedAt { get; set; }
     public DateTime EndTime { get; set; }
     public int NumberOfPeople { get; set; }

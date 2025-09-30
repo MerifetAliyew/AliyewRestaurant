@@ -9,4 +9,5 @@ public interface IRoleService
     Task<BaseResponse<string>> DeleteRoleAsync(string roleName);
     Task<BaseResponse<List<string>>> GetAllRolesAsync();
     Task<BaseResponse<List<RoleWithPermissionsDto>>> GetRolesWithPermissionsAsync();
+    Task<BaseResponse<string>> AssignRoleToUserAsync(string userId, string roleName);
 }

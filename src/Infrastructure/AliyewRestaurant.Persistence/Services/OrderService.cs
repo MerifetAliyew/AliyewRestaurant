@@ -32,6 +32,15 @@ public class OrderService : IOrderService
 
     public async Task<BaseResponse<OrderGetDto>> CreateOrderAsync(OrderCreateDto dto)
     {
+        if (dto.Items == null || !dto.Items.Any())
+            return new BaseResponse<OrderGetDto>("Sifariş ən azı 1 elementdən ibarət olmalıdır.", HttpStatusCode.BadRequest);
+
+        // yalnız Quantity > 0 olan itemləri götürürük
+        var validItems = dto.Items.Where(i => i.Quantity > 0).ToList();
+
+        if (!validItems.Any())
+            return new BaseResponse<OrderGetDto>("Sifariş ən azı 1 ədəd olmalıdır.", HttpStatusCode.BadRequest);
+
         var user = await _userManager.FindByIdAsync(dto.UserId);
         if (user == null)
             return new BaseResponse<OrderGetDto>("İstifadəçi tapılmadı", HttpStatusCode.NotFound);
@@ -41,21 +50,26 @@ public class OrderService : IOrderService
             UserId = dto.UserId,
             Status = OrderStatus.Pending,
             CreatedAt = DateTime.UtcNow,
-            OrderItems = new List<OrderItem>()
+            OrderItems = new List<OrderItem>(),
+            TotalAmount = 0m
         };
 
-        foreach (var item in dto.Items)
+        foreach (var item in validItems)
         {
             var menuItem = await _menuItemRepository.GetByIdAsync(item.MenuItemId);
             if (menuItem == null || !menuItem.IsAvailable)
                 return new BaseResponse<OrderGetDto>($"Menyu elementi {item.MenuItemId} mövcud deyil", HttpStatusCode.BadRequest);
 
+            var itemTotal = item.Quantity * menuItem.Price;
+
             order.OrderItems.Add(new OrderItem
             {
                 MenuItemId = item.MenuItemId,
                 Quantity = item.Quantity,
-                TotalPrice = item.Quantity * menuItem.Price
+                TotalPrice = itemTotal
             });
+
+            order.TotalAmount += itemTotal;
         }
 
         await _orderRepository.AddAsync(order);
@@ -66,13 +80,14 @@ public class OrderService : IOrderService
             await _emailService.SendEmailAsync(
                 new List<string> { user.Email },
                 "Sifariş yaradıldı",
-                $"Sizin {order.Id} nömrəli sifarişiniz uğurla yaradıldı."
+                $"Sizin {order.Id} nömrəli sifarişiniz uğurla yaradıldı. Ümumi məbləğ: {order.TotalAmount} AZN."
             );
         }
 
         var orderDto = MapOrderToDto(order, user.FullName);
         return new BaseResponse<OrderGetDto>("Sifariş uğurla yaradıldı", orderDto, HttpStatusCode.Created);
     }
+
 
     public async Task<BaseResponse<OrderGetDto>> GetOrderByIdAsync(Guid orderId)
     {
@@ -116,7 +131,6 @@ public class OrderService : IOrderService
         var user = await _userManager.FindByIdAsync(order.UserId);
         if (user != null && !string.IsNullOrEmpty(user.Email))
         {
-            // ✅ Burada OrderStatusExtensions istifadə edirik
             var mesaj = $"Sifariş: {status.ToAzeriMessage()}";
             await _emailService.SendEmailAsync(
                 new List<string> { user.Email },
@@ -137,6 +151,7 @@ public class OrderService : IOrderService
             UserName = userName,
             Status = order.Status,
             CreatedAt = order.CreatedAt,
+            TotalAmount = order.TotalAmount,
             Items = order.OrderItems.Select(oi => new OrderItemDto
             {
                 MenuItemId = oi.MenuItemId,

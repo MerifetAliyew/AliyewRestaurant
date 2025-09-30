@@ -9,6 +9,7 @@ public class Order : BaseEntity
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public OrderStatus Status { get; set; }
+    public decimal TotalAmount { get; set; } = 0m;
 
     public ICollection<OrderItem> OrderItems { get; set; }
 }
